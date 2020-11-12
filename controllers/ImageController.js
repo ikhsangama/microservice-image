@@ -1,10 +1,32 @@
 const Image = require('../models/Image')
 const { ObjectId } = require('mongodb')
+var formidable = require('formidable');
+const vision = require('@google-cloud/vision');
 
 class ImageController {
 
-  static send(req, res, next) {
+  static async send(req, res, next) {
     // console.log("trigger")
+    // Creates a client
+    const client = new vision.ImageAnnotatorClient();
+    try {
+      // Performs label detection on the image file
+      const [result] = await client.labelDetection('./1.jpg');
+      console.log(result, "<< be");
+      const labels = result.labelAnnotations;
+      console.log('Labels:');
+      labels.forEach(label => console.log(label));
+      res.send(labels)
+
+      // const [result] = await client.textDetection('./3.jpg');
+      // console.log(result, "<< be");
+      // res.send(result)
+      // const texts = result.textAnnotations;
+      // console.log('Texts:');
+      // texts.forEach(text => console.log(text.description));
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // static async findAll(req, res, next) {
